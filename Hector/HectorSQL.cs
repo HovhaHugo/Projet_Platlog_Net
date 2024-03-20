@@ -11,14 +11,31 @@ namespace Hector
     class HectorSQL
     {
 
-        public static void InitialisezDatabase()
+        public static bool InitialisezDatabase()
         {
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
-            using (SQLiteConnection Database = new SQLiteConnection($"Filename={DBPath}"))
+            string ConncetionString = @"Data Source="+DBPath+";";
+            //using (SQLiteConnection Database = new SQLiteConnection($"Filename={DBPath}"))
+            using (SQLiteConnection Database = new SQLiteConnection(ConncetionString))
             {
                 Database.Open();
 
-                SQLiteCommand selectCommand = new SQLiteCommand("SELECT * FROM Familles");
+                SQLiteCommand selectCommand = new SQLiteCommand("SELECT Nom FROM Familles");
+                selectCommand.Connection = Database;
+
+                SQLiteDataReader query = selectCommand.ExecuteReader();
+
+
+                if (query.Read())
+                {
+                    MessageBox.Show(query.GetString(0).ToString());
+                }
+
+                /*while (query.Read())
+                {
+                    MessageBox.Show(query.GetString(0).ToString());
+                }*/
+                return true;
 
             }
 

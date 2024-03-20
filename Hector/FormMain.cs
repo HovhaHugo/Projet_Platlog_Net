@@ -23,28 +23,27 @@ namespace Hector
             switch (e.Node.Name)
             {
                 case "NodeArticle":
-                    Console.Out.WriteLine("Article cliquer !");
                     break;
                 case "NodeFamille":
-                    Console.Out.WriteLine("Famille cliquer !");
+                    HectorSQL.InitialisezDatabase();
                     break;
                 case "NodeMarque":
-                    Console.Out.WriteLine("Marques cliquer !");
+                    MessageBox.Show("Marques cliquer !");
                     break;
                 case "NodePapier":
-                    Console.Out.WriteLine("Papier cliquer !");
+                    MessageBox.Show("Papier cliquer !");
                     break;
                 case "NodeClairefontaine":
-                    Console.Out.WriteLine("Claire Fontaine cliquer !");
+                    MessageBox.Show("Claire Fontaine cliquer !");
                     break;
                 case "NodePapierLaser":
-                    Console.Out.WriteLine("Papier Laser cliquer !");
+                    MessageBox.Show("Papier Laser cliquer !");
                     break;
                 case "NodeSousFamille1":
-                    Console.Out.WriteLine("Ecriture cliquer !");
+                    MessageBox.Show("Ecriture cliquer !");
                     break;
                 case "NodeStylo":
-                    Console.Out.WriteLine("Stylo cliquer !");
+                    MessageBox.Show("Stylo cliquer !");
                     break;
 
             }
