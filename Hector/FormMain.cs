@@ -51,5 +51,11 @@ namespace Hector
 
             }
         }
+
+        private void importerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormImport formImport = new FormImport();
+            formImport.ShowDialog();
+        }
     }
 }

@@ -91,6 +91,7 @@ namespace Hector
             this.importerToolStripMenuItem.Name = "importerToolStripMenuItem";
             this.importerToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.importerToolStripMenuItem.Text = "Importer";
+            this.importerToolStripMenuItem.Click += new System.EventHandler(this.importerToolStripMenuItem_Click);
             // 
             // exporterToolStripMenuItem
             // 
@@ -170,7 +171,7 @@ namespace Hector
             this.listView1.UseCompatibleStateImageBehavior = false;
             // 
             // FormMain
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(533, 292);
