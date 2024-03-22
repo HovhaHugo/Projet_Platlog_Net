@@ -29,19 +29,19 @@ namespace Hector
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("Tous les articles");
-            System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("Stylos, feutres & rollers");
-            System.Windows.Forms.TreeNode treeNode19 = new System.Windows.Forms.TreeNode("Ecriture & Correction", new System.Windows.Forms.TreeNode[] {
-            treeNode18});
-            System.Windows.Forms.TreeNode treeNode20 = new System.Windows.Forms.TreeNode("Papier laser");
-            System.Windows.Forms.TreeNode treeNode21 = new System.Windows.Forms.TreeNode("Papier", new System.Windows.Forms.TreeNode[] {
-            treeNode20});
-            System.Windows.Forms.TreeNode treeNode22 = new System.Windows.Forms.TreeNode("Familles", new System.Windows.Forms.TreeNode[] {
-            treeNode19,
-            treeNode21});
-            System.Windows.Forms.TreeNode treeNode23 = new System.Windows.Forms.TreeNode("Clairefontaine");
-            System.Windows.Forms.TreeNode treeNode24 = new System.Windows.Forms.TreeNode("Marques", new System.Windows.Forms.TreeNode[] {
-            treeNode23});
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Tous les articles");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Stylos, feutres & rollers");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Ecriture & Correction", new System.Windows.Forms.TreeNode[] {
+            treeNode2});
+            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Papier laser");
+            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Papier", new System.Windows.Forms.TreeNode[] {
+            treeNode4});
+            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Familles", new System.Windows.Forms.TreeNode[] {
+            treeNode3,
+            treeNode5});
+            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Clairefontaine");
+            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Marques", new System.Windows.Forms.TreeNode[] {
+            treeNode7});
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fichierToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.actualiserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -113,7 +113,7 @@ namespace Hector
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 24);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -133,28 +133,28 @@ namespace Hector
             // 
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
-            this.treeView1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.treeView1.Margin = new System.Windows.Forms.Padding(2);
             this.treeView1.Name = "treeView1";
-            treeNode17.Name = "NodeArticle";
-            treeNode17.Text = "Tous les articles";
-            treeNode18.Name = "NodeStylo";
-            treeNode18.Text = "Stylos, feutres & rollers";
-            treeNode19.Name = "NodeSousFamille1";
-            treeNode19.Text = "Ecriture & Correction";
-            treeNode20.Name = "NodePapierLaser";
-            treeNode20.Text = "Papier laser";
-            treeNode21.Name = "NodePapier";
-            treeNode21.Text = "Papier";
-            treeNode22.Name = "NodeFamille";
-            treeNode22.Text = "Familles";
-            treeNode23.Name = "NodeClairefontaine";
-            treeNode23.Text = "Clairefontaine";
-            treeNode24.Name = "NodeMarque";
-            treeNode24.Text = "Marques";
+            treeNode1.Name = "NodeArticle";
+            treeNode1.Text = "Tous les articles";
+            treeNode2.Name = "NodeStylo";
+            treeNode2.Text = "Stylos, feutres & rollers";
+            treeNode3.Name = "NodeSousFamille1";
+            treeNode3.Text = "Ecriture & Correction";
+            treeNode4.Name = "NodePapierLaser";
+            treeNode4.Text = "Papier laser";
+            treeNode5.Name = "NodePapier";
+            treeNode5.Text = "Papier";
+            treeNode6.Name = "NodeFamille";
+            treeNode6.Text = "Familles";
+            treeNode7.Name = "NodeClairefontaine";
+            treeNode7.Text = "Clairefontaine";
+            treeNode8.Name = "NodeMarque";
+            treeNode8.Text = "Marques";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode17,
-            treeNode22,
-            treeNode24});
+            treeNode1,
+            treeNode6,
+            treeNode8});
             this.treeView1.Size = new System.Drawing.Size(200, 246);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
@@ -164,14 +164,15 @@ namespace Hector
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(0, 0);
-            this.listView1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.listView1.Margin = new System.Windows.Forms.Padding(2);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(330, 246);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
             // 
             // FormMain
-            //
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(533, 292);
@@ -179,7 +180,7 @@ namespace Hector
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "FormMain";
             this.Text = "Form1";
             this.menuStrip1.ResumeLayout(false);
