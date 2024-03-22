@@ -59,3 +59,4 @@ C:\Github\Projet_Platlog_Net\Hector\obj\Debug\Hector.csproj.CoreCompileInputs.ca
 C:\Github\Projet_Platlog_Net\Hector\obj\Debug\Hector.csproj.Up2Date
 C:\Github\Projet_Platlog_Net\Hector\obj\Debug\Hector.exe
 C:\Github\Projet_Platlog_Net\Hector\obj\Debug\Hector.pdb
+C:\Users\Administrateur\Documents\GitHub\Projet_Platlog_Net\Hector\obj\Debug\Hector.FormImport.resources

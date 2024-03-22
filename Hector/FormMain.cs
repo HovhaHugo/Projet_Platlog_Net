@@ -17,8 +17,6 @@ namespace Hector
         {
             InitializeComponent();
             HectorSQL.InitialiseDatabase();
-            listView1.Columns.Add("Id", 48, HorizontalAlignment.Left);
-            listView1.Columns.Add("Nom", 300, HorizontalAlignment.Left);
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
@@ -26,9 +24,10 @@ namespace Hector
             switch (e.Node.Name)
             {
                 case "NodeArticle":
+                    HectorSQL.GetArticles(listView1);
                     break;
                 case "NodeFamille":
-                    HectorSQL.GetNomFamille(listView1);
+                    HectorSQL.GetFamilles(listView1);
                     break;
                 case "NodeMarque":
                     MessageBox.Show("Marques cliquer !");
