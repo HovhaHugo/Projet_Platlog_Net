@@ -19,80 +19,50 @@ namespace Hector
             InitializeComponent();
         }
 
-        //Code for the folder browse button click event.
-        private void btnDirectoryPath_Click(object sender, EventArgs e)
+        private void btnOpenFileDialog_Click(object sender, EventArgs e)
         {
-            folderBrowserDialog1.SelectedPath = txtDirectoryPath.Text;
-            DialogResult drResult = folderBrowserDialog1.ShowDialog();
-            if (drResult == DialogResult.OK)
-                txtDirectoryPath.Text = folderBrowserDialog1.SelectedPath;
+            openFileDialog1.ShowDialog();
         }
 
-        //Code for the ‘Load Directory’ button click event. In this function, we are clearing the old data such as resetting the progressbar value
-        //and clearing Treeview node's data and then, we are calling our main function ‘LoadDirectory’.
-        private void btnLoadDirectory_Click(object sender, EventArgs e)
+        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
-            //On initialise la barre de progression
-            progressBar1.Value = 0;
-            //On réinitialise le TreeView si jamais il n'était pas vide
-            treeView1.Nodes.Clear();
-            if (Directory.Exists(txtDirectoryPath.Text))
-                LoadDirectory(txtDirectoryPath.Text);
-            else
-                MessageBox.Show("Select Directory!!");
-        }
-
-        //In this function, we are passing a root directory path which we are getting from the textbox in function parameter
-        //and loading sub directories of the given path and creating nodes for the each respective directory, as shown in the below code. 
-        public void LoadDirectory(string Dir)
-        {
-            DirectoryInfo di = new DirectoryInfo(Dir);
-            //Setting ProgressBar Maximum Value
-            progressBar1.Maximum = Directory.GetFiles(Dir, "*.*", SearchOption.AllDirectories).Length + Directory.GetDirectories(Dir, "**", SearchOption.AllDirectories).Length;
-            TreeNode tds = treeView1.Nodes.Add(di.Name);
-            tds.Tag = di.FullName;
-            tds.StateImageIndex = 0;
-            LoadFiles(Dir, tds);
-            LoadSubDirectories(Dir, tds);
-        }
-
-        //In this function, we are passing a directory path in function parameter and loading sub directories of the given path
-        //and creating nodes for the each respective directory and setting Image for the directory node, as Shown in the below Code,
-        private void LoadSubDirectories(string dir, TreeNode td)
-        {
-            // Get all subdirectories
-            string[] subdirectoryEntries = Directory.GetDirectories(dir);
-            // Loop through them to see if they have any other subdirectories
-            foreach (string subdirectory in subdirectoryEntries)
+            labelFileName.Text = openFileDialog1.SafeFileName;
+            txtDirectoryPath.Text = openFileDialog1.FileName;
+            /*using (StreamReader Sr = File.OpenText(openFileDialog1.FileName))
             {
-                DirectoryInfo di = new DirectoryInfo(subdirectory);
-                TreeNode tds = td.Nodes.Add(di.Name);
-                tds.StateImageIndex = 0;
-                tds.Tag = di.FullName;
-                LoadFiles(subdirectory, tds);
-                LoadSubDirectories(subdirectory, tds);
-                UpdateProgress1();
-            }
-        }
+                string Ligne = "";
+                textBox1.Text = Ligne;
+                while ((Ligne = Sr.ReadLine()) != null)
+                {
+                    //On rajoute chaque ligne du fichier dans la Textbox
+                    textBox1.Text += Ligne;
+                    textBox1.AppendText(Environment.NewLine);
+                }
+                if (etoile)
+                {
+                    etoile = false;
+                }
+                Text = OGformName + "[" + openFileDialog1.SafeFileName + "]";
 
-        //In this function we are passing a directory path in function parameter and loading files of the given path
-        //and creating nodes for the each respective file and setting Image for the file node, as Shown in the below Code,  
-        private void LoadFiles(string dir, TreeNode td)
-        {
-            string[] Files = Directory.GetFiles(dir, "*.*");
-            // Loop through them to see files
-            foreach (string file in Files)
-            {
-                FileInfo fi = new FileInfo(file);
-                TreeNode tds = td.Nodes.Add(fi.Name);
-                tds.Tag = fi.FullName;
-                tds.StateImageIndex = 1;
-                UpdateProgress1();
-            }
+                var watcher = new FileSystemWatcher(openFileDialog1.FileName);
+                watcher.NotifyFilter = NotifyFilters.Attributes
+                                     | NotifyFilters.CreationTime
+                                     | NotifyFilters.DirectoryName
+                                     | NotifyFilters.FileName
+                                     | NotifyFilters.LastAccess
+                                     | NotifyFilters.LastWrite
+                                     | NotifyFilters.Security
+                                     | NotifyFilters.Size;
+
+                watcher.Changed += OnChanged;
+                watcher.Filter = "*.txt";
+                watcher.IncludeSubdirectories = true;
+                watcher.EnableRaisingEvents = true;
+            }*/
         }
 
         //Fonctions qui font avancer les barres de progression à chaque avancée
-        private void UpdateProgress1()
+        private void UpdateProgress()
         {
             if (progressBar1.Value < progressBar1.Maximum)
             {
@@ -100,28 +70,43 @@ namespace Hector
                 Application.DoEvents();
             }
         }
-        private void UpdateProgress2()
-        {
-            if (progressBar2.Value < progressBar2.Maximum)
-            {
-                progressBar2.Value++;
-                Application.DoEvents();
-            }
-        }
 
-        //Fonction qui affiche dans labelFileName le nom du fichier cliqué dans la TreeView
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        private int TotalLines(string filePath)
         {
-            labelFileName.Text = treeView1.SelectedNode.Text;
+            using (StreamReader r = new StreamReader(filePath))
+            {
+                int i = 0;
+                while (r.ReadLine() != null) { i++; }
+                return i;
+            }
         }
 
         private void btnEcrase_Click(object sender, EventArgs e)
         {
-            progressBar2.Maximum= 100;
-            progressBar2.Value= 0;
-            for (int i = 0; i < 100; i++)
+            progressBar1.Maximum = TotalLines(openFileDialog1.FileName);    //on setup le max de la barre de progression pour voir l'avancée par ligne
+            progressBar1.Value = 0;                                         //on met la barre de progression à 0
+            using (var Sr = new StreamReader(openFileDialog1.FileName))
             {
-                progressBar2.Value++;
+                UpdateProgress();   //on prend en compte la lecture de la ligne de vérification dans la progression
+                if (Sr.ReadLine() != "Description;Ref;Marque;Famille;Sous-Famille;Prix H.T.") MessageBox.Show("Mais c'est quoi ce csv dégeulasse?!!");
+                else
+                {
+                    while (!Sr.EndOfStream)
+                    {
+                        string line = Sr.ReadLine();
+                        string[] values = line.Split(';');
+
+                        //si la ref de l'article values[1] existe déjà on renvoie une erreur (ou on la compte juste pas en la stockant dans une liste d'echec)
+                        //si la marque values[2] existe pas on la crée et on récupère son ID
+                        //sinon on récupère l'ID de la marque existante
+                        //si la famille values[3] existe pas on la crée
+                        //si la sous-famille values[4] existe pas on la crée
+                        //sinon on récupère l'ID de la sous-famille existante
+                        //on ajoute l'article avec sa ref values[1], son nom values[0], sa sous-famille values[4], sa marque values[2], son prix values [5], et sa quantité à 0
+
+                        UpdateProgress();
+                    }
+                }
             }
         }
 

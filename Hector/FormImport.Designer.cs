@@ -28,84 +28,38 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.btnDirectoryPath = new System.Windows.Forms.Button();
-            this.btnLoadDirectory = new System.Windows.Forms.Button();
+            this.btnOpenFileDialog = new System.Windows.Forms.Button();
             this.txtDirectoryPath = new System.Windows.Forms.TextBox();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.treeView1 = new System.Windows.Forms.TreeView();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.label1 = new System.Windows.Forms.Label();
             this.labelFileName = new System.Windows.Forms.Label();
             this.btnAjout = new System.Windows.Forms.Button();
             this.btnEcrase = new System.Windows.Forms.Button();
-            this.progressBar2 = new System.Windows.Forms.ProgressBar();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.SuspendLayout();
             // 
-            // btnDirectoryPath
+            // btnOpenFileDialog
             // 
-            this.btnDirectoryPath.BackColor = System.Drawing.SystemColors.Control;
-            this.btnDirectoryPath.Location = new System.Drawing.Point(383, 6);
-            this.btnDirectoryPath.Name = "btnDirectoryPath";
-            this.btnDirectoryPath.Size = new System.Drawing.Size(31, 23);
-            this.btnDirectoryPath.TabIndex = 0;
-            this.btnDirectoryPath.Text = "...";
-            this.btnDirectoryPath.UseVisualStyleBackColor = false;
-            this.btnDirectoryPath.Click += new System.EventHandler(this.btnDirectoryPath_Click);
-            // 
-            // btnLoadDirectory
-            // 
-            this.btnLoadDirectory.Location = new System.Drawing.Point(298, 35);
-            this.btnLoadDirectory.Name = "btnLoadDirectory";
-            this.btnLoadDirectory.Size = new System.Drawing.Size(116, 24);
-            this.btnLoadDirectory.TabIndex = 1;
-            this.btnLoadDirectory.Text = "Load Directory";
-            this.btnLoadDirectory.UseVisualStyleBackColor = true;
-            this.btnLoadDirectory.Click += new System.EventHandler(this.btnLoadDirectory_Click);
+            this.btnOpenFileDialog.BackColor = System.Drawing.SystemColors.Control;
+            this.btnOpenFileDialog.Location = new System.Drawing.Point(12, 28);
+            this.btnOpenFileDialog.Name = "btnOpenFileDialog";
+            this.btnOpenFileDialog.Size = new System.Drawing.Size(102, 31);
+            this.btnOpenFileDialog.TabIndex = 0;
+            this.btnOpenFileDialog.Text = "Search file";
+            this.btnOpenFileDialog.UseVisualStyleBackColor = false;
+            this.btnOpenFileDialog.Click += new System.EventHandler(this.btnOpenFileDialog_Click);
             // 
             // txtDirectoryPath
             // 
-            this.txtDirectoryPath.Location = new System.Drawing.Point(120, 6);
+            this.txtDirectoryPath.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtDirectoryPath.Location = new System.Drawing.Point(0, 0);
             this.txtDirectoryPath.Name = "txtDirectoryPath";
-            this.txtDirectoryPath.Size = new System.Drawing.Size(257, 22);
+            this.txtDirectoryPath.Size = new System.Drawing.Size(430, 22);
             this.txtDirectoryPath.TabIndex = 2;
-            // 
-            // progressBar1
-            // 
-            this.progressBar1.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.progressBar1.Location = new System.Drawing.Point(12, 36);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(280, 23);
-            this.progressBar1.TabIndex = 3;
-            // 
-            // treeView1
-            // 
-            this.treeView1.Location = new System.Drawing.Point(15, 65);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(399, 374);
-            this.treeView1.TabIndex = 4;
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
-            // 
-            // imageList1
-            // 
-            this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
-            this.imageList1.ImageSize = new System.Drawing.Size(16, 16);
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(102, 16);
-            this.label1.TabIndex = 5;
-            this.label1.Text = "Select Directory";
             // 
             // labelFileName
             // 
             this.labelFileName.AutoSize = true;
-            this.labelFileName.Location = new System.Drawing.Point(12, 452);
+            this.labelFileName.Location = new System.Drawing.Point(120, 35);
             this.labelFileName.Name = "labelFileName";
             this.labelFileName.Size = new System.Drawing.Size(78, 16);
             this.labelFileName.TabIndex = 6;
@@ -113,9 +67,10 @@
             // 
             // btnAjout
             // 
-            this.btnAjout.Location = new System.Drawing.Point(339, 445);
+            this.btnAjout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAjout.Location = new System.Drawing.Point(222, 79);
             this.btnAjout.Name = "btnAjout";
-            this.btnAjout.Size = new System.Drawing.Size(75, 23);
+            this.btnAjout.Size = new System.Drawing.Size(196, 23);
             this.btnAjout.TabIndex = 7;
             this.btnAjout.Text = "Ajouter";
             this.btnAjout.UseVisualStyleBackColor = true;
@@ -123,37 +78,41 @@
             // 
             // btnEcrase
             // 
-            this.btnEcrase.Location = new System.Drawing.Point(258, 445);
+            this.btnEcrase.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnEcrase.Location = new System.Drawing.Point(12, 79);
             this.btnEcrase.Name = "btnEcrase";
-            this.btnEcrase.Size = new System.Drawing.Size(75, 23);
+            this.btnEcrase.Size = new System.Drawing.Size(196, 23);
             this.btnEcrase.TabIndex = 8;
             this.btnEcrase.Text = "Ecraser";
             this.btnEcrase.UseVisualStyleBackColor = true;
             this.btnEcrase.Click += new System.EventHandler(this.btnEcrase_Click);
             // 
-            // progressBar2
+            // progressBar1
             // 
-            this.progressBar2.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.progressBar2.Location = new System.Drawing.Point(12, 474);
-            this.progressBar2.Name = "progressBar2";
-            this.progressBar2.Size = new System.Drawing.Size(402, 23);
-            this.progressBar2.TabIndex = 9;
+            this.progressBar1.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.progressBar1.Location = new System.Drawing.Point(0, 108);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(430, 23);
+            this.progressBar1.TabIndex = 9;
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            this.openFileDialog1.Filter = "Fichiers cvs (*.csv)|*.csv";
+            this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
             // 
             // FormImport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(430, 509);
-            this.Controls.Add(this.progressBar2);
+            this.ClientSize = new System.Drawing.Size(430, 131);
+            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.btnEcrase);
             this.Controls.Add(this.btnAjout);
             this.Controls.Add(this.labelFileName);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.treeView1);
-            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.txtDirectoryPath);
-            this.Controls.Add(this.btnLoadDirectory);
-            this.Controls.Add(this.btnDirectoryPath);
+            this.Controls.Add(this.btnOpenFileDialog);
             this.Name = "FormImport";
             this.Text = "Form1";
             this.ResumeLayout(false);
@@ -163,17 +122,12 @@
 
         #endregion
 
-        private System.Windows.Forms.Button btnDirectoryPath;
-        private System.Windows.Forms.Button btnLoadDirectory;
+        private System.Windows.Forms.Button btnOpenFileDialog;
         private System.Windows.Forms.TextBox txtDirectoryPath;
-        private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.TreeView treeView1;
-        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
-        private System.Windows.Forms.ImageList imageList1;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label labelFileName;
         private System.Windows.Forms.Button btnAjout;
         private System.Windows.Forms.Button btnEcrase;
-        private System.Windows.Forms.ProgressBar progressBar2;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }
