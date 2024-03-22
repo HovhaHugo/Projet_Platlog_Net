@@ -88,7 +88,7 @@ namespace Hector
             using (var Sr = new StreamReader(openFileDialog1.FileName))
             {
                 UpdateProgress();   //on prend en compte la lecture de la ligne de vérification dans la progression
-                if (Sr.ReadLine() != "Description;Ref;Marque;Famille;Sous-Famille;Prix H.T.") MessageBox.Show("Mais c'est quoi ce csv dégeulasse?!!");
+                if (Sr.ReadLine() != "Description;Ref;Marque;Famille;Sous-Famille;Prix H.T.") MessageBox.Show("Ce fichier csv n'est pas dans un bon format");
                 else
                 {
                     while (!Sr.EndOfStream)
