@@ -21,34 +21,32 @@ namespace Hector
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            switch (e.Node.Name)
+            if(e.Node.Parent != null)
             {
-                case "NodeArticle":
-                    HectorSQL.GetArticles(listView1);
-                    break;
-                case "NodeFamille":
-                    HectorSQL.GetFamilles(listView1);
-                    break;
-                case "NodeMarque":
-                    MessageBox.Show("Marques cliquer !");
-                    break;
-                case "NodePapier":
-                    MessageBox.Show("Papier cliquer !");
-                    break;
-                case "NodeClairefontaine":
-                    MessageBox.Show("Claire Fontaine cliquer !");
-                    break;
-                case "NodePapierLaser":
-                    MessageBox.Show("Papier Laser cliquer !");
-                    break;
-                case "NodeSousFamille1":
-                    MessageBox.Show("Ecriture cliquer !");
-                    break;
-                case "NodeStylo":
-                    MessageBox.Show("Stylo cliquer !");
-                    break;
-
+                //MessageBox.Show("Noeud enfant cliequer : " + e.Node.Name);
+                if(e.Node.Parent.Name == "NodeFamille")
+                {
+                    MessageBox.Show("Noeud sousfamille cliequer : " + e.Node.Text);
+                    HectorSQL.GetSousFamilles(listView1, e.Node.Text);
+                }
             }
+            else
+            {
+                switch (e.Node.Name)
+                {
+                    case "NodeArticle":
+                        HectorSQL.GetArticles(listView1);
+                        break;
+                    case "NodeFamille":
+                        HectorSQL.GetFamilles(listView1);
+                        break;
+                    case "NodeMarque":
+                        HectorSQL.GetMarques(listView1);
+                        break;
+
+                }
+            }
+            
         }
 
         private void importerToolStripMenuItem_Click(object sender, EventArgs e)
