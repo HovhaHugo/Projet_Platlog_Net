@@ -55,7 +55,13 @@ namespace Hector
         private void importerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FormImport formImport = new FormImport();
-            formImport.ShowDialog();
+            formImport.StartPosition = FormStartPosition.CenterParent;
+            formImport.ShowDialog(this);
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
