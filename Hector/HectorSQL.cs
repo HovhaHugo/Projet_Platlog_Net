@@ -12,6 +12,10 @@ namespace Hector
     class HectorSQL
     {
 
+        /// <summary>
+        /// Initialise la connection avec la base de donnée et permet de mettre le nom des noeuds des sous-familles ou des marques.
+        /// </summary>
+        /// <param name="treeView1"></param>
         public static void InitialiseDatabase(TreeView treeView1)
         {
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
@@ -70,7 +74,12 @@ namespace Hector
             }
         }
 
+        #region Getteurs de base
 
+        /// <summary>
+        /// Permet de récupérer la liste des Familles et les mets dans le listViews
+        /// </summary>
+        /// <param name="listView1"> Le listview à modifier </param>
         public static void GetFamilles(ListView listView1)
         {
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
@@ -100,6 +109,11 @@ namespace Hector
             }
         }
 
+        /// <summary>
+        /// Permet de récupérer la liste des SousFamilles et les mets dans le listViews
+        /// </summary>
+        /// <param name="listView1"> Le listview à modifier </param>
+        /// <param name="nomNode">Le nom de la famille parent à la sous famille</param>
         public static void GetSousFamilles(ListView listView1, String nomNode)
         {
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
@@ -116,7 +130,7 @@ namespace Hector
                 Database.Open();
                 SQLiteCommand selectCommand = new SQLiteCommand("SELECT RefSousFamille, Familles.Nom, SousFamilles.Nom " +
                     "FROM SousFamilles INNER JOIN Familles ON Familles.RefFamille = SousFamilles.RefFamille " +
-                    "WHERE Familles.Nom = '"+ nomNode + "'");
+                    "WHERE Familles.Nom = '" + nomNode + "'");
                 selectCommand.Connection = Database;
 
                 SQLiteDataReader query = selectCommand.ExecuteReader();
@@ -133,6 +147,10 @@ namespace Hector
             }
         }
 
+        /// <summary>
+        ///  Permet de récupérer la liste des Articles et les mets dans le listViews
+        /// </summary>
+        /// <param name="listView1"> Le listview à modifier </param>
         public static void GetArticles(ListView listView1)
         {
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
@@ -174,6 +192,11 @@ namespace Hector
             }
         }
 
+
+        /// <summary>
+        /// Permet de récupérer la liste des Marques et les mets dans le listViews
+        /// </summary>
+        /// <param name="listView1"> Le listview à modifier </param>
         public static void GetMarques(ListView listView1)
         {
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
@@ -203,9 +226,15 @@ namespace Hector
             }
         }
 
+        #endregion
 
+        #region GetArticlesBy...
 
-
+        /// <summary>
+        /// Permet de récupérer la liste des Articles trié par la Famille séléctionné 
+        /// </summary>
+        /// <param name="listView1"> Le listview qui a être modifier</param>
+        /// <param name="nomNode">Le nom de la famille qui à été séléctionner</param>
         public static void GetArticlesByFamille(ListView listView1, String nomNode)
         {
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
@@ -229,7 +258,7 @@ namespace Hector
                     "INNER JOIN SousFamilles ON SousFamilles.RefSousFamille = Articles.RefSousFamille " +
                     "INNER JOIN Marques ON Marques.RefMarque = Articles.RefMarque " +
                     "INNER JOIN Familles ON Familles.RefFamille = SousFamilles.RefFamille " +
-                    "WHERE Familles.Nom == '" + nomNode+"'");
+                    "WHERE Familles.Nom == '" + nomNode + "'");
                 selectCommand.Connection = Database;
 
                 SQLiteDataReader query = selectCommand.ExecuteReader();
@@ -249,6 +278,11 @@ namespace Hector
             }
         }
 
+        /// <summary>
+        /// Permet de récupérer la liste des Articles trié par la Marque séléctionné
+        /// </summary>
+        /// <param name="listView1"> Le listview qui a être modifier </param>
+        /// <param name="nomNode">Le nom de la marque qui à été séléctionner</param>
         public static void GetArticlesByMarque(ListView listView1, String nomNode)
         {
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
@@ -291,7 +325,11 @@ namespace Hector
             }
         }
 
-
+        /// <summary>
+        /// Permet de récupérer la liste des Articles trié par la SousFamille séléctionné
+        /// </summary>
+        /// <param name="listView1"> Le listview qui a être modifier </param>
+        /// <param name="nomNode"> Le nom de la marque qui à été séléctionner </param>
         public static void GetArticlesBySousFamille(ListView listView1, String nomNode)
         {
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
@@ -334,5 +372,6 @@ namespace Hector
             }
         }
 
+        #endregion
     }
 }
