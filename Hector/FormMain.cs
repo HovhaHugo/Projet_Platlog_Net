@@ -16,18 +16,32 @@ namespace Hector
         public FormMain()
         {
             InitializeComponent();
-            HectorSQL.InitialiseDatabase();
+            HectorSQL.InitialiseDatabase(treeView1);
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
             if(e.Node.Parent != null)
             {
-                //MessageBox.Show("Noeud enfant cliequer : " + e.Node.Name);
+                //MessageBox.Show("Noeud enfant cliquer : " + e.Node.Name);
                 if(e.Node.Parent.Name == "NodeFamille")
                 {
-                    MessageBox.Show("Noeud sousfamille cliequer : " + e.Node.Text);
+                    //MessageBox.Show("Noeud sousfamille cliequer : " + e.Node.Text);
                     HectorSQL.GetSousFamilles(listView1, e.Node.Text);
+                }
+                else
+                {
+                    if (e.Node.Parent.Name == "NodeMarque")
+                    {
+                        HectorSQL.GetArticlesByMarque(listView1, e.Node.Text);
+                    }
+                    else
+                    {
+                        if (e.Node.Parent.Name != null)
+                        {
+                            HectorSQL.GetArticlesBySousFamille(listView1, e.Node.Text);
+                        }
+                    }
                 }
             }
             else
