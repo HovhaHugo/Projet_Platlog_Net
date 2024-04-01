@@ -86,7 +86,8 @@ namespace Hector
             string ConncetionString = @"Data Source=" + DBPath + ";";
 
             listView1.Clear();
-            //listView1.Columns.Add("Référence", 48, HorizontalAlignment.Left);
+            listView1.Groups.Clear();
+            listView1.Sorting = SortOrder.None;
             listView1.Columns.Add("Description", -2, HorizontalAlignment.Left);
             listView1.GridLines = true;
 
@@ -100,11 +101,7 @@ namespace Hector
 
                 while (query.Read())
                 {
-                    ListViewItem item = new ListViewItem(query.GetString(1).ToString());
-                    //item.SubItems.Add(query.GetString(1).ToString());
-
-                    listView1.Items.Add(item);
-                    //MessageBox.Show(query.GetString(0).ToString());
+                    listView1.Items.Add(query.GetString(1).ToString());
                 }
             }
         }
@@ -138,11 +135,8 @@ namespace Hector
                 while (query.Read())
                 {
                     ListViewItem item = new ListViewItem(query.GetString(2).ToString());
-                    //item.SubItems.Add(query.GetString(1).ToString());
-                    //item.SubItems.Add(query.GetString(2).ToString());
 
                     listView1.Items.Add(item);
-                    //MessageBox.Show(query.GetString(0).ToString());
                 }
             }
         }
@@ -158,17 +152,11 @@ namespace Hector
 
             listView1.Clear();
             listView1.Columns.Add("Reférence",90, HorizontalAlignment.Left);
-            //listView1.Groups.Add(new ListViewGroup("Référence", HorizontalAlignment.Left));
             listView1.Columns.Add("Description",150, HorizontalAlignment.Left);
-            //listView1.Groups.Add(new ListViewGroup("Description", HorizontalAlignment.Left));
             listView1.Columns.Add("Famille",150, HorizontalAlignment.Left);
-            //listView1.Groups.Add(new ListViewGroup("Famille", HorizontalAlignment.Left));
             listView1.Columns.Add("Sous-Famille",150, HorizontalAlignment.Left);
-            //listView1.Groups.Add(new ListViewGroup("Sous-Famille", HorizontalAlignment.Left));
             listView1.Columns.Add("Marque",150, HorizontalAlignment.Left);
-            //listView1.Groups.Add(new ListViewGroup("Marque", HorizontalAlignment.Left));
             listView1.Columns.Add("Quantite",80, HorizontalAlignment.Left);
-            //listView1.Groups.Add(new ListViewGroup("Quantite", HorizontalAlignment.Left));
             listView1.GridLines = true;
 
             using (SQLiteConnection Database = new SQLiteConnection(ConncetionString))
@@ -187,29 +175,14 @@ namespace Hector
                 while (query.Read())
                 {
                     ListViewItem item = new ListViewItem(query.GetString(0).ToString());
-                    /*ListViewItem itemDesc = new ListViewItem(query.GetString(1).ToString());
-                    ListViewItem itemFam = new ListViewItem(query.GetString(2).ToString());
-                    ListViewItem itemSousFam = new ListViewItem(query.GetString(3).ToString());
-                    ListViewItem itemMarque = new ListViewItem(query.GetString(4).ToString());
-                    ListViewItem itemQuantite = new ListViewItem(query.GetValue(5).ToString());*/
                     item.SubItems.Add(query.GetString(1).ToString());
                     item.SubItems.Add(query.GetString(2).ToString());
                     item.SubItems.Add(query.GetString(3).ToString());
                     item.SubItems.Add(query.GetString(4).ToString());
                     item.SubItems.Add(query.GetValue(5).ToString());
 
-                    /*itemDesc.Group = listView1.Groups[1];
-                    itemFam.Group = listView1.Groups[2];
-                    itemSousFam.Group = listView1.Groups[3];
-                    itemMarque.Group = listView1.Groups[4];
-                    itemQuantite.Group = listView1.Groups[5];*/
+                   
                     listView1.Items.Add(item);
-
-                    /*listView1.Items.Add(itemDesc);
-                    listView1.Items.Add(itemFam);
-                    listView1.Items.Add(itemSousFam);
-                    listView1.Items.Add(itemMarque); 
-                    listView1.Items.Add(itemQuantite);*/
                     //MessageBox.Show(query.GetString(0).ToString());
                 }
             }

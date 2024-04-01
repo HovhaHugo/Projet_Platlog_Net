@@ -29,9 +29,9 @@ namespace Hector
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Tous les articles");
-            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Familles");
-            System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("Marques");
+            System.Windows.Forms.TreeNode treeNode22 = new System.Windows.Forms.TreeNode("Tous les articles");
+            System.Windows.Forms.TreeNode treeNode23 = new System.Windows.Forms.TreeNode("Familles");
+            System.Windows.Forms.TreeNode treeNode24 = new System.Windows.Forms.TreeNode("Marques");
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fichierToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.actualiserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -126,16 +126,16 @@ namespace Hector
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Margin = new System.Windows.Forms.Padding(2);
             this.treeView1.Name = "treeView1";
-            treeNode13.Name = "NodeArticle";
-            treeNode13.Text = "Tous les articles";
-            treeNode14.Name = "NodeFamille";
-            treeNode14.Text = "Familles";
-            treeNode15.Name = "NodeMarque";
-            treeNode15.Text = "Marques";
+            treeNode22.Name = "NodeArticle";
+            treeNode22.Text = "Tous les articles";
+            treeNode23.Name = "NodeFamille";
+            treeNode23.Text = "Familles";
+            treeNode24.Name = "NodeMarque";
+            treeNode24.Text = "Marques";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode13,
-            treeNode14,
-            treeNode15});
+            treeNode22,
+            treeNode23,
+            treeNode24});
             this.treeView1.Size = new System.Drawing.Size(417, 485);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);

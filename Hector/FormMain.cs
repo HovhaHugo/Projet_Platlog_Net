@@ -30,7 +30,8 @@ namespace Hector
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if(e.Node.Parent != null)
+            this.listView1.ListViewItemSorter = lvwColumnSorter;
+            if (e.Node.Parent != null)
             {
                 //MessageBox.Show("Noeud enfant cliquer : " + e.Node.Name);
                 if(e.Node.Parent.Name == "NodeFamille")
@@ -85,7 +86,35 @@ namespace Hector
         }
 
         private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
-        {// Determine if clicked column is already the column that is being sorted.
+        {
+            listView1.Groups.Clear();
+            List<string> itemChoises = new List<string>();
+            //Pour chaque item dans la liste 
+            //Si on as une nouvelle desciptions, on l'ajoute à notre liste, on créer un groupe, et on ajoute l'item à notre groupe
+            //Sinon, on ajoute l'item au bon groupe. 
+            int column = e.Column;
+            int x = 0;
+            foreach (ListViewItem item in listView1.Items)
+            {
+                //Si on as une nouvelle desciptions, on l'ajoute à notre liste, on créer un groupe, et on ajoute l'item à notre groupe
+                if (!itemChoises.Contains(item.SubItems[column].Text))
+                {
+                    itemChoises.Add(item.SubItems[column].Text);
+                    listView1.Groups.Add(new ListViewGroup(item.SubItems[column].Text, HorizontalAlignment.Left));
+                    item.Group = listView1.Groups[x];
+
+                    x++;
+                }
+                //Sinon, on ajoute l'item au bon groupe.
+                else
+                {
+                    int numéroGroupe = itemChoises.IndexOf(item.SubItems[column].Text);
+                    item.Group = listView1.Groups[numéroGroupe];
+                   
+                }
+                //listView1.Groups.Add(new ListViewGroup(, HorizontalAlignment.Left));
+            }
+            // Determine if clicked column is already the column that is being sorted.
             if (e.Column == lvwColumnSorter.SortColumn)
             {
                 // Reverse the current sort direction for this column.
@@ -104,7 +133,6 @@ namespace Hector
                 lvwColumnSorter.SortColumn = e.Column;
                 lvwColumnSorter.Order = SortOrder.Ascending;
             }
-
             // Perform the sort with these new sort options.
             this.listView1.Sort();
         }
