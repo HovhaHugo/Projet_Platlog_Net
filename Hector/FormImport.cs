@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SQLite;
 using System.IO;
@@ -47,6 +48,33 @@ namespace Hector
             }
         }
 
+        //Fonction qui vérifie que le fichier csv est bon, et rempli le tableau value des données du csv si oui, en revoyant true (sinon il renvoie false)
+        private bool LectureCSV(List<string[]> values)
+        {
+            bool result = false;
+            var Sr = new StreamReader(openFileDialog1.FileName);
+
+            //on vérifie si le format du fichier CSV est bon
+            if (Sr.ReadLine() != "Description;Ref;Marque;Famille;Sous-Famille;Prix H.T.")
+            {
+                MessageBox.Show("Ce fichier csv n'est pas dans un bon format (en-tête)");
+            }
+            else
+            {
+                UpdateProgress();   //pour la barre de progression, on prend en compte la lecture de la ligne de vérification
+
+                //on crée un tableau 2D values dans lequel on met toutes les données du csv
+                while (!Sr.EndOfStream)
+                {
+                    string line = Sr.ReadLine();
+                    values.Add(line.Split(';'));
+                }
+                result = true;
+            }
+            Sr.Close();
+            return result;
+        }
+
         //Fonction pour vérifier l'existence d'une marque à partir de son nom, et la créer si ce n'est pas le cas
         private void CheckMarque(SQLiteConnection Database, string nomMarque)
         {
@@ -91,17 +119,8 @@ namespace Hector
                 SQLiteDataReader Query = Command.ExecuteReader();
                 if (!Query.HasRows)
                 {
-                    string IDfamille;
-                    //On récupère l'ID de la famille nomFamille à laquelle appartient notre sous-famille
-                    using (SQLiteCommand CommandArg = new SQLiteCommand("SELECT RefFamille FROM Familles WHERE Nom = '" + nomFamille + "'", Database))
-                    {
-                        SQLiteDataReader QueryArg = CommandArg.ExecuteReader();
-                        QueryArg.Read();
-                        IDfamille = QueryArg.GetInt32(0).ToString();
-                    }
-
                     //On crée la sous-famille
-                    using (SQLiteCommand CommandArg = new SQLiteCommand("INSERT INTO SousFamilles (RefFamille, Nom) VALUES ('" + IDfamille + "', '" + nomSousFamille + "')", Database))
+                    using (SQLiteCommand CommandArg = new SQLiteCommand("INSERT INTO SousFamilles (RefFamille, Nom) VALUES ((SELECT RefFamille FROM Familles WHERE Nom = '" + nomFamille + "'), '" + nomSousFamille + "')", Database))
                         CommandArg.ExecuteNonQuery();
                 }
             }
@@ -114,56 +133,48 @@ namespace Hector
         {
             progressBar.Maximum = TotalLines(openFileDialog1.FileName);    //on setup le max de la barre de progression pour voir l'avancée par ligne
             progressBar.Value = 0;                                         //on met la barre de progression à 0
-            using (var Sr = new StreamReader(openFileDialog1.FileName))
+            List<string[]> values = new List<string[]>(); ;
+            if(LectureCSV(values))      //Si le format csv est bon, les valeurs sont mises dans values et on commence l'importation
             {
-                //on vérifie si le format du fichier CSV est bon
-                if (Sr.ReadLine() != "Description;Ref;Marque;Famille;Sous-Famille;Prix H.T.") MessageBox.Show("Ce fichier csv n'est pas dans un bon format (en-tête)");
-                else
+                string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");  //le path vers la base SQLite que l'on remplit
+                string ConnectionString = @"Data Source=" + DBPath + ";";
+                SQLiteConnection Database = new SQLiteConnection(ConnectionString);
+
+                for (int IterationArticle = 0; IterationArticle < values.Count; IterationArticle++)
                 {
-                    UpdateProgress();   //pour la barre de progression, on prend en compte la lecture de la ligne de vérification
-                    while (!Sr.EndOfStream)
-                    {
-                        string line = Sr.ReadLine();
-                        string[] values = line.Split(';');
+                    /*
+                    //On crée la marque values[2] si elle n'existe pas
+                    CheckMarque(Database, values[IterationArticle][2]);
 
-                        string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");  //le path vers la base SQLite que l'on remplit
-                        string ConnectionString = @"Data Source=" + DBPath + ";";
+                    //On crée la famille values[3] si elle n'existe pas
+                    CheckFamille(Database, values[IterationArticle][3]);
 
-                        //On ouvre un SQLiteConnection pour faire des tests, puis ajouter les valeurs du .csv dans le .SQLite
-                        using (SQLiteConnection Database = new SQLiteConnection(ConnectionString))
-                        {
-                            /*
-                            //On crée la marque values[2] si elle n'existe pas
-                            CheckMarque(Database, values[2]);
+                    //On crée la sous-famille values[4] si elle n'existe pas
+                    CheckSousFamille(Database, values[IterationArticle][3], values[IterationArticle][4]);
+                    */
 
-                            //On crée la famille values[3] si elle n'existe pas
-                            CheckFamille(Database, values[3]);
+                    //CREATION DE L'ARTICLE
 
-                            //On crée la sous-famille values[4] si elle n'existe pas
-                            CheckSousFamille(Database, values[3], values[4]);
-                            */
-                            //CREATION DE L'ARTICLE
+                    string prix = values[IterationArticle][5].Replace(',', '.'); //on remplace la virgule du float du prix par un point pour etre dans le format des requetes SQL
 
-                            string prix = values[5].Replace(',', '.'); //on remplace la virgule du float du prix par un point pour etre dans le format des requetes SQL
+                    //on ajoute l'article avec sa ref values[1], son nom values[0], ID de sa sous-famille values[4], ID de sa marque values[2], son prix values [5], et sa quantité à 0
+                    //on utilise INSERT OR REPLACE pour mettre à jour l'article si son ID existe déjà
 
-                            //on ajoute l'article avec sa ref values[1], son nom values[0], ID de sa sous-famille values[4], ID de sa marque values[2], son prix values [5], et sa quantité à 0
-                            //on utilise INSERT OR REPLACE pour mettre à jour l'article si son ID existe déjà
+                    /*
+                    string RequeteAjoutArticle = "INSERT OR REPLACE INTO Articles (RefArticle, Description, RefSousFamille, RefMarque, PrixHT, Quantite)" +
+                        " VALUES ('" + values[1] + "', '" + values[0] + "', " +
+                        "(SELECT RefSousFamille FROM SousFamilles WHERE Nom = '" + values[4] + "'), " +
+                        "(SELECT RefMarque FROM Marques WHERE Nom = '" + values[2] + "'), " + prix + ", 0)";
+                    */
 
-                            /*string RequeteAjoutArticle = "INSERT OR REPLACE INTO Articles (RefArticle, Description, RefSousFamille, RefMarque, PrixHT, Quantite)" +
-                                " VALUES ('" + values[1] + "', '" + values[0] + "', " +
-                                "(SELECT RefSousFamille FROM SousFamilles WHERE Nom = '" + values[4] + "'), " +
-                                "(SELECT RefMarque FROM Marques WHERE Nom = '" + values[2] + "'), " + prix + ", 0)";*/
+                    string RequeteAjoutArticle = "INSERT OR REPLACE INTO Articles (RefArticle, Description, RefSousFamille, RefMarque, PrixHT, Quantite)" +
+                        " VALUES ('" + values[1] + "', '" + values[0] + "', '1', '1', " + prix + ", 0)";
 
-                            string RequeteAjoutArticle = "INSERT OR REPLACE INTO Articles (RefArticle, Description, RefSousFamille, RefMarque, PrixHT, Quantite)" +
-                                " VALUES ('" + values[1] + "', '" + values[0] + "', '1', '1', " + prix + ", 0)";
-
-                            Database.Open();
-                            using (SQLiteCommand Command = new SQLiteCommand(RequeteAjoutArticle, Database))
-                                Command.ExecuteNonQuery();
-                            Database.Close();
-                        }
-                        UpdateProgress(); //on fait avancer la barre de progression
-                    }
+                    Database.Open();
+                    using (SQLiteCommand Command = new SQLiteCommand(RequeteAjoutArticle, Database))
+                        Command.ExecuteNonQuery();
+                    Database.Close();
+                    UpdateProgress(); //on fait avancer la barre de progression
                 }
             }
         }
@@ -172,7 +183,7 @@ namespace Hector
         {
             if (openFileDialog1.CheckFileExists)
             {
-                //supprimer la base de données actuelle
+                //Il faut supprimer la base de données actuelle ici
                 AjoutCSV_dans_SQLite();
             }
             else MessageBox.Show("Veuillez choisir un tableau csv via le bouton 'Search file'");
