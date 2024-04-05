@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.IO;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Data.SQLite;
+using System.IO;
+using System.Windows.Forms;
 
 namespace Hector
 {
@@ -34,9 +27,9 @@ namespace Hector
         //Fonction qui fait avancer la barre de progression à chaque avancée du programme
         private void UpdateProgress()
         {
-            if (progressBar1.Value < progressBar1.Maximum)
+            if (progressBar.Value < progressBar.Maximum)
             {
-                progressBar1.Value++;
+                progressBar.Value++;
                 Application.DoEvents();
             }
         }
@@ -51,155 +44,115 @@ namespace Hector
             }
         }
 
-        private void InsererElement(string table, string nom)
+        //VERIFICATION DE L'EXISTENCE DE LA MARQUE / CREATION DE LA MARQUE SINON
+        private void CheckMarque(SQLiteConnection Database, string nomMarque)
         {
-            //insère un nouvel élément avec comme Nom nom, dans la Table table (soit une marque, soit une sous-famille)
+            Database.Open();
+            //On vérifie que la marque nommé nomMarque existe, si non on la crée
+            using (SQLiteCommand Command = new SQLiteCommand("SELECT * FROM Marques WHERE Nom = '" + nomMarque + "'", Database))
+            {
+                SQLiteDataReader Query = Command.ExecuteReader();
+                if (!Query.HasRows)
+                {
+                    using (SQLiteCommand CommandArg = new SQLiteCommand("INSERT INTO Marques (Nom) VALUES ('" + nomMarque + "')", Database))
+                        CommandArg.ExecuteNonQuery();
+                }
+            }
+            Database.Close();
         }
 
-        private void AjoutCSV_dans_SQLite()
+        //VERIFICATION DE L'EXISTENCE DE LA FAMILLE / CREATION DE LA FAMILLE SINON
+        private void CheckFamille(SQLiteConnection Database, string nomFamille)
         {
-            progressBar1.Maximum = TotalLines(openFileDialog1.FileName);    //on setup le max de la barre de progression pour voir l'avancée par ligne
-            progressBar1.Value = 0;                                         //on met la barre de progression à 0
+            Database.Open();
+            //On vérifie que la famille nommé nomFamille existe, si non on la crée
+            using (SQLiteCommand Command = new SQLiteCommand("SELECT RefFamille, Nom FROM Familles WHERE Nom = '" + nomFamille + "'", Database))
+            {
+                SQLiteDataReader Query = Command.ExecuteReader();
+                if (!Query.HasRows)
+                {
+                    using (SQLiteCommand CommandArg = new SQLiteCommand("INSERT INTO Famille (Nom) VALUES ('" + nomFamille + "')", Database))
+                        CommandArg.ExecuteNonQuery();
+                }
+            }
+            Database.Close();
+        }
+
+        //VERIFICATION DE L'EXISTENCE DE LA SOUS-FAMILLE / CREATION DE LA SOUS-FAMILLE SINON
+        private void CheckSousFamille(SQLiteConnection Database, string nomFamille, string nomSousFamille)
+        {
+            Database.Open();
+            //On vérifie que la sous-famille nommé nomSousFamille existe, si non on la crée
+            using (SQLiteCommand Command = new SQLiteCommand("SELECT * FROM SousFamilles WHERE Nom = '" + nomSousFamille + "'", Database))
+            {
+                SQLiteDataReader Query = Command.ExecuteReader();
+                if (!Query.HasRows)
+                {
+                    string IDfamille;
+                    //On récupère l'ID de la famille nomFamille à laquelle appartient notre sous-famille
+                    using (SQLiteCommand CommandArg = new SQLiteCommand("SELECT RefFamille FROM Familles WHERE Nom = '" + nomFamille + "'", Database))
+                    {
+                        SQLiteDataReader QueryArg = CommandArg.ExecuteReader();
+                        QueryArg.Read();
+                        IDfamille = QueryArg.GetInt32(0).ToString();
+                    }
+
+                    //On crée la sous-famille
+                    using (SQLiteCommand CommandArg = new SQLiteCommand("INSERT INTO SousFamilles (RefFamille, Nom) VALUES ('" + IDfamille + "', '" + nomSousFamille + "')", Database))
+                        CommandArg.ExecuteNonQuery();
+                }
+            }
+            Database.Close();
+        }
+
+            private void AjoutCSV_dans_SQLite()
+        {
+            progressBar.Maximum = TotalLines(openFileDialog1.FileName);    //on setup le max de la barre de progression pour voir l'avancée par ligne
+            progressBar.Value = 0;                                         //on met la barre de progression à 0
             using (var Sr = new StreamReader(openFileDialog1.FileName))
             {
-                UpdateProgress();   //on prend en compte la lecture de la ligne de vérification dans la progression
                 //on vérifie si le format du fichier CSV est bon
-                if (Sr.ReadLine() != "Description;Ref;Marque;Famille;Sous-Famille;Prix H.T.") MessageBox.Show("Ce fichier csv n'est pas dans un bon format");
+                if (Sr.ReadLine() != "Description;Ref;Marque;Famille;Sous-Famille;Prix H.T.") MessageBox.Show("Ce fichier csv n'est pas dans un bon format (en-tête)");
                 else
                 {
+                    UpdateProgress();   //on prend en compte la lecture de la ligne de vérification dans la progression
                     while (!Sr.EndOfStream)
                     {
                         string line = Sr.ReadLine();
                         string[] values = line.Split(';');
 
-                        string DBPath = Path.Combine(Application.StartupPath, "Hector2.SQLite");
+                        string DBPath = Path.Combine(Application.StartupPath, "Hector2.SQLite");  //le path vers la base SQLite que l'on remplit
                         string ConnectionString = @"Data Source=" + DBPath + ";";
 
-                        int test = 0;
                         //On ouvre un SQLiteConnection pour faire des tests, puis ajouter les valeurs du .csv dans le .SQLite
                         using (SQLiteConnection Database = new SQLiteConnection(ConnectionString))
                         {
-                            SQLiteCommand Command;
-                            SQLiteDataReader query;
-                            
-                            string IDmarque = "";
-                            Database.Open();
-                            using (Command = new SQLiteCommand("SELECT RefMarque, Nom FROM Marques WHERE Nom = '" + values[2] + "'", Database))
-                            {
-                                query = Command.ExecuteReader();
-                                //CAS1.1: si la marque values[2] existe on récupère son ID
-                                if (query.Read())
-                                {
-                                    IDmarque = query.GetInt32(0).ToString();
-                                }
-                                //CAS 1.2: sinon on la crée et on récupère son ID ensuite
-                                else
-                                {
-                                    test = 1;
-                                }
-                            }
-                            Database.Close();
+                            //On récupère l'ID de la marque values[2]
+                            CheckMarque(Database, values[2]);
 
-                            if (test == 1)
-                            {
-                                //Création de la marque
-                                Database.Open();
-                                using (Command = new SQLiteCommand("INSERT INTO Marques (Nom) VALUES ('" + values[2] + "')", Database))
-                                    Command.ExecuteNonQuery();
-                                Database.Close();
+                            //On crée la famille values[3] si elle n'existe pas
+                            CheckFamille(Database, values[3]);
 
-                                //Récupération de son ID
-                                Database.Open();
-                                using (Command = new SQLiteCommand("SELECT RefMarque FROM Marques WHERE Nom = '" + values[2] + "'", Database))
-                                {
-                                    query = Command.ExecuteReader();
-                                    query.Read();
-                                    IDmarque = query.GetInt32(0).ToString();
-                                }
-                                Database.Close();
-                                test = 0;
-                            }
-                            
-                            Database.Open();
-                            using (Command = new SQLiteCommand("SELECT RefFamille, Nom FROM Familles WHERE Nom = '" + values[3] + "'", Database))
-                            {
-                                query = Command.ExecuteReader();
-                                //CAS 2: si la famille values[3] n'existe pas on la crée
-                                if (!query.Read())
-                                {
-                                    test = 1;
-                                }
-                            }
-                            Database.Close();
+                            //On récupère l'ID de la sous-famille values[4]
+                            CheckSousFamille(Database, values[3], values[4]);
 
-                            if(test == 1)
-                            {
-                                Database.Open();
-                                using (Command = new SQLiteCommand("INSERT INTO Famille (Nom) VALUES ('" + values[3] + "')", Database))
-                                    Command.ExecuteNonQuery();
-                                Database.Close();
-                                test = 0;
-                            }
+                            //CREATION DE L'ARTICLE
 
-                            string IDsousfamille = "";
-                            Database.Open();
-                            using (Command = new SQLiteCommand("SELECT RefSousFamille, RefFamille, Nom FROM SousFamilles WHERE Nom = '" + values[4] + "'", Database))
-                            {
-                                query = Command.ExecuteReader();
-                                //CAS 3.1: si la sous-famille values[4] existe on récupère son ID
-                                if (query.Read())
-                                {
-                                    IDsousfamille = query.GetInt32(0).ToString();
-                                }
-                                //CAS 3.2: sinon on la crée et on récupère son ID ensuite
-                                else
-                                {
-                                    test = 1;
-                                }
-                            }
-                            Database.Close();
+                            string prix = values[5].Replace(',', '.'); //on remplace la virgule du float du prix par un point pour etre dans le format des requetes SQL
 
-                            if (test == 1)
-                            {
-                                string IDfamille;
-                                //Récupération de l'ID de la famille
-                                Database.Open();
-                                using (Command = new SQLiteCommand("SELECT RefFamille FROM Familles WHERE Nom = '" + values[3] + "'", Database))
-                                {
-                                    query = Command.ExecuteReader();
-                                    query.Read();
-                                    IDfamille = query.GetInt32(0).ToString();
-                                }
-                                Database.Close();
-
-                                //Création de la sous-famille
-                                Database.Open();
-                                using (Command = new SQLiteCommand("INSERT INTO SousFamilles (RefFamille, Nom) VALUES ('" + IDfamille + "', '" + values[4] + "')", Database))
-                                    Command.ExecuteNonQuery();
-                                Database.Close();
-
-                                //Récupération de son ID
-                                Database.Open();
-                                using (Command = new SQLiteCommand("SELECT RefSousFamille FROM SousFamilles WHERE Nom = '" + values[4] + "'", Database))
-                                {
-                                    query = Command.ExecuteReader();
-                                    query.Read();
-                                    IDsousfamille = query.GetInt32(0).ToString();
-                                }
-                                Database.Close();
-                            }
-                            
-                            //on remplace la virgule du float du prix par un point pour etre dans le format des requetes SQL
-                            string prix = values[5].Replace(',', '.');
                             //on ajoute l'article avec sa ref values[1], son nom values[0], ID de sa sous-famille values[4], ID de sa marque values[2], son prix values [5], et sa quantité à 0
-                            //on utilise REPLACE pour mettre à jour l'article si son ID existe déjà
+                            //on utilise INSERT OR REPLACE pour mettre à jour l'article si son ID existe déjà
                             Database.Open();
-                            using (Command = new SQLiteCommand("INSERT OR REPLACE INTO Articles (RefArticle, Description, RefSousFamille, RefMarque, PrixHT, Quantite)" +
-                                " VALUES ('" + values[1] + "', '" + values[0] + "', '" + /*IDsousfamille*/"1" + "', '" + /*IDmarque*/"1" + "', " + prix + ", 0)", Database))
+                            string RequeteAjoutArticle = "INSERT OR REPLACE INTO Articles (RefArticle, Description, RefSousFamille, RefMarque, PrixHT, Quantite)" +
+                                " VALUES ('" + values[1] + "', '" + values[0] + "', " +
+                                "(SELECT RefSousFamille FROM SousFamilles WHERE Nom = '" + values[4] + "'), " +
+                                "(SELECT RefMarque FROM Marques WHERE Nom = '" + values[2] + "'), " + prix + ", 0)";
+
+                            using (SQLiteCommand Command = new SQLiteCommand(RequeteAjoutArticle, Database))
                                 Command.ExecuteNonQuery();
                             Database.Close();
                         }
-                        UpdateProgress();
+                        UpdateProgress(); //on fait avancer la barre de progression
                     }
                 }
             }

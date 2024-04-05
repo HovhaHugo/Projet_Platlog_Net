@@ -33,7 +33,7 @@
             this.labelFileName = new System.Windows.Forms.Label();
             this.btnAjout = new System.Windows.Forms.Button();
             this.btnEcrase = new System.Windows.Forms.Button();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.SuspendLayout();
             // 
@@ -89,12 +89,12 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.progressBar1.Location = new System.Drawing.Point(0, 108);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(430, 23);
-            this.progressBar1.TabIndex = 9;
+            this.progressBar.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.progressBar.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.progressBar.Location = new System.Drawing.Point(0, 108);
+            this.progressBar.Name = "progressBar1";
+            this.progressBar.Size = new System.Drawing.Size(430, 23);
+            this.progressBar.TabIndex = 9;
             // 
             // openFileDialog1
             // 
@@ -107,7 +107,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(430, 131);
-            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.progressBar);
             this.Controls.Add(this.btnEcrase);
             this.Controls.Add(this.btnAjout);
             this.Controls.Add(this.labelFileName);
@@ -127,7 +127,7 @@
         private System.Windows.Forms.Label labelFileName;
         private System.Windows.Forms.Button btnAjout;
         private System.Windows.Forms.Button btnEcrase;
-        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }
