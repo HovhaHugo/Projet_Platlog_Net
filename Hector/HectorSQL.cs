@@ -85,9 +85,6 @@ namespace Hector
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
             string ConncetionString = @"Data Source=" + DBPath + ";";
 
-            listView1.Clear();
-            listView1.Groups.Clear();
-            listView1.Sorting = SortOrder.None;
             listView1.Columns.Add("Description", -2, HorizontalAlignment.Left);
             listView1.GridLines = true;
 
@@ -113,12 +110,10 @@ namespace Hector
         /// <param name="nomNode">Le nom de la famille parent à la sous famille</param>
         public static void GetSousFamilles(ListView listView1, String nomNode)
         {
+            _ = listView1.Sorting;
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
             string ConncetionString = @"Data Source=" + DBPath + ";";
 
-            listView1.Clear();
-            //listView1.Columns.Add("Référence", 48, HorizontalAlignment.Left);
-            //listView1.Columns.Add("Famille", 100, HorizontalAlignment.Left);
             listView1.Columns.Add("Description", -2, HorizontalAlignment.Left);
             listView1.GridLines = true;
 
@@ -150,7 +145,6 @@ namespace Hector
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
             string ConncetionString = @"Data Source=" + DBPath + ";";
 
-            listView1.Clear();
             listView1.Columns.Add("Reférence",90, HorizontalAlignment.Left);
             listView1.Columns.Add("Description",150, HorizontalAlignment.Left);
             listView1.Columns.Add("Famille",150, HorizontalAlignment.Left);
@@ -198,7 +192,6 @@ namespace Hector
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
             string ConncetionString = @"Data Source=" + DBPath + ";";
 
-            listView1.Clear();
             //listView1.Columns.Add("Id", 48, HorizontalAlignment.Left);
             listView1.Columns.Add("Description", -2, HorizontalAlignment.Left);
             listView1.GridLines = true;
@@ -236,7 +229,6 @@ namespace Hector
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
             string ConncetionString = @"Data Source=" + DBPath + ";";
 
-            listView1.Clear();
             listView1.Columns.Add("Reférence", 48, HorizontalAlignment.Left);
             listView1.Columns.Add("Description", 100, HorizontalAlignment.Left);
             listView1.Columns.Add("Sous-Famille", 100, HorizontalAlignment.Left);
@@ -284,7 +276,6 @@ namespace Hector
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
             string ConncetionString = @"Data Source=" + DBPath + ";";
 
-            listView1.Clear();
             listView1.Columns.Add("Reférence", 48, HorizontalAlignment.Left);
             listView1.Columns.Add("Description", 100, HorizontalAlignment.Left);
             listView1.Columns.Add("Sous-Famille", 100, HorizontalAlignment.Left);
@@ -331,7 +322,6 @@ namespace Hector
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
             string ConncetionString = @"Data Source=" + DBPath + ";";
 
-            listView1.Clear();
             listView1.Columns.Add("Reférence", 48, HorizontalAlignment.Left);
             listView1.Columns.Add("Description", 100, HorizontalAlignment.Left);
             listView1.Columns.Add("Sous-Famille", 100, HorizontalAlignment.Left);
@@ -369,5 +359,31 @@ namespace Hector
         }
 
         #endregion
+
+        public static int GetNumberArticles()
+        {
+            string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
+            string ConncetionString = @"Data Source=" + DBPath + ";";
+            int NombreArticles = 0;
+            using (SQLiteConnection Database = new SQLiteConnection(ConncetionString))
+            {
+                Database.Open();
+                SQLiteCommand selectCommand = new SQLiteCommand("SELECT RefArticle, Description, " +
+                    "Familles.Nom, SousFamilles.Nom, Marques.Nom, Quantite " +
+                    "FROM Articles " +
+                    "INNER JOIN SousFamilles ON SousFamilles.RefSousFamille = Articles.RefSousFamille " +
+                    "INNER JOIN Familles ON Familles.RefFamille = SousFamilles.RefFamille " +
+                    "INNER JOIN Marques ON Marques.RefMarque = Articles.RefMarque ");
+                selectCommand.Connection = Database;
+
+                SQLiteDataReader query = selectCommand.ExecuteReader();
+
+                while (query.Read())
+                {
+                    NombreArticles++;
+                }
+            }
+            return NombreArticles;
+        }
     }
 }

@@ -26,11 +26,17 @@ namespace Hector
             lvwColumnSorter = new ListViewColumnSorter();
             this.listView1.ListViewItemSorter = lvwColumnSorter;
             HectorSQL.InitialiseDatabase(treeView1);
+            this.statusStrip1.Items.Add("Nombre d'articles dans la base de données : "+HectorSQL.GetNumberArticles().ToString());
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            lvwColumnSorter = new ListViewColumnSorter();
             this.listView1.ListViewItemSorter = lvwColumnSorter;
+            //_ =this.listView1.Sorting;
+            listView1.Clear();
+            listView1.Groups.Clear();
+            listView1.Sorting = SortOrder.None;
             if (e.Node.Parent != null)
             {
                 //MessageBox.Show("Noeud enfant cliquer : " + e.Node.Name);
@@ -43,7 +49,7 @@ namespace Hector
                 {
                     if (e.Node.Parent.Name == "NodeMarque")
                     {
-                        HectorSQL.GetArticlesByMarque(listView1, e.Node.Text);
+                       HectorSQL.GetArticlesByMarque(listView1, e.Node.Text);
                     }
                     else
                     {
@@ -140,6 +146,23 @@ namespace Hector
         private void FormMain_Load(object sender, EventArgs e)
         {
             
+        }
+
+        private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            //MessageBox.Show("Noeud enfant cliquer : " + e.Node.Name);
+            ListViewHitTestInfo info = listView1.HitTest(e.X, e.Y);
+            ListViewItem item = info.Item;
+
+            if (item != null)
+            {
+                MessageBox.Show("The selected Item Name is: " + item.Text);
+            }
+            else
+            {
+                this.listView1.SelectedItems.Clear();
+                MessageBox.Show("No Item is selected");
+            }
         }
     }
 }
