@@ -86,11 +86,6 @@ namespace Hector
             formImport.ShowDialog(this);
         }
 
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             listView1.Groups.Clear();
@@ -143,11 +138,6 @@ namespace Hector
             this.listView1.Sort();
         }
 
-        private void FormMain_Load(object sender, EventArgs e)
-        {
-            
-        }
-
         private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             //MessageBox.Show("Noeud enfant cliquer : " + e.Node.Name);
@@ -156,13 +146,57 @@ namespace Hector
 
             if (item != null)
             {
-                MessageBox.Show("The selected Item Name is: " + item.Text);
+                MessageBox.Show("Fonction d'ajout ou de modification indisponible");
             }
             else
             {
                 this.listView1.SelectedItems.Clear();
-                MessageBox.Show("No Item is selected");
             }
+        }
+
+        private void actualiserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            listView1.Clear();
+            lvwColumnSorter = new ListViewColumnSorter();
+            this.listView1.ListViewItemSorter = lvwColumnSorter;
+            HectorSQL.InitialiseDatabase(treeView1);
+            this.statusStrip1.Items.Add("Nombre d'articles dans la base de données : " + HectorSQL.GetNumberArticles().ToString());
+        }
+
+        private void listView1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if(listView1.SelectedItems.Count >0 )
+            {
+                //MessageBox.Show("C'est la touche : " + e.KeyChar+" qui est touché ");
+                if (e.KeyChar == (char)Keys.Return)
+                {
+                    MessageBox.Show("Fonction d'ajout ou de modification indisponible");
+                }
+                if (e.KeyChar == (char)Keys.Space)
+                {
+                    MessageBox.Show("Fonction d'ajout ou de modification indisponible");
+                }
+                if (e.KeyChar == (char)Keys.Back)
+                {
+                    //MessageBox.Show("C'est la touche : Supp qui est touché avec l'item "+ listView1.SelectedItems[0].Text);
+                    var Resultat = MessageBox.Show("Voulez vous vraiment supprimé l'élément séléctionner ? ", "Suppresion d'élément", MessageBoxButtons.OKCancel);
+                    if (Resultat == DialogResult.OK)
+                    {
+                        string ResultatSuppression = HectorSQL.DelElements(listView1.SelectedItems[0].Text, treeView1.SelectedNode);
+                        MessageBox.Show(ResultatSuppression);
+                    }
+                }
+            }
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Fonction d'ajout ou de modification indisponible");
+        }
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Fonction de suppression par menu indisponible");
         }
     }
 }

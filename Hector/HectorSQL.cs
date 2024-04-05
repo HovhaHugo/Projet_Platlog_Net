@@ -30,6 +30,7 @@ namespace Hector
                 {
                     if (NodePrincipal.Name == "NodeFamille")
                     {
+                        NodePrincipal.Nodes.Clear();
                         SQLiteCommand selectCommandFamille = new SQLiteCommand("SELECT * FROM Familles");
                         SQLiteCommand selectCommandSousFamille = new SQLiteCommand("SELECT * FROM SousFamilles INNER JOIN Familles On Familles.RefFamille = SousFamilles.RefFamille");
                         selectCommandFamille.Connection = Database;
@@ -58,6 +59,7 @@ namespace Hector
                     }
                     if (NodePrincipal.Name == "NodeMarque")
                     {
+                        NodePrincipal.Nodes.Clear();
                         SQLiteCommand selectCommand = new SQLiteCommand("SELECT * FROM Marques");
                         selectCommand.Connection = Database;
 
@@ -110,7 +112,6 @@ namespace Hector
         /// <param name="nomNode">Le nom de la famille parent à la sous famille</param>
         public static void GetSousFamilles(ListView listView1, String nomNode)
         {
-            _ = listView1.Sorting;
             string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
             string ConncetionString = @"Data Source=" + DBPath + ";";
 
@@ -385,5 +386,136 @@ namespace Hector
             }
             return NombreArticles;
         }
+
+        public static string DelElements(string ElementASupprimer, TreeNode NoeudsElement)
+        {
+            //D'abord, on regarde ce que l'on as récupérer, on veut savoir si c'est une marque, une famille, une sous famille ou un article. 
+            string ConfirmationSuppression = "La suppresion à bien eu lieu";
+                
+            if(NoeudsElement.Text == "Familles")
+            {
+                MessageBox.Show("Suppression de famille");
+                ConfirmationSuppression =DelFamilles(ElementASupprimer);
+            }
+            else
+            {
+                if (NoeudsElement.Text == "Marques")
+                {
+                    MessageBox.Show("Suppression de marque");
+                    ConfirmationSuppression = DelMarques(ElementASupprimer);
+                }
+                else
+                {
+                    if (NoeudsElement.Text == "Tous les articles")
+                    {
+                        MessageBox.Show("Suppression d'article");
+                        ConfirmationSuppression = DelArticle(ElementASupprimer);
+                    }
+                }
+            }
+            if (NoeudsElement.Parent != null)
+            {
+                if (NoeudsElement.Parent.Text == "Familles")
+                {
+                    MessageBox.Show("Suppression de sous familles ");
+                    ConfirmationSuppression = DelSousFamilles(ElementASupprimer);
+                }
+                else
+                {
+                    MessageBox.Show("Suppression d'article");
+                    ConfirmationSuppression = DelArticle(ElementASupprimer);
+                }
+            }
+
+            return "La suppression à bien eu lieu";
+        }
+
+        #region Delete
+        public static string DelArticle(string ElementASupprimer)
+        {
+            string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
+            string ConncetionString = @"Data Source=" + DBPath + ";";
+            using (SQLiteConnection Database = new SQLiteConnection(ConncetionString))
+            {
+                Database.Open();
+                SQLiteCommand DeleteCommande = new SQLiteCommand("DELETE FROM Marques WHERE RefArticle='" + ElementASupprimer + "'", Database);
+                DeleteCommande.ExecuteNonQuery();
+            }
+            return "La suppression à bien eu lieu";
+        }
+
+        public static string DelMarques(string ElementASupprimer)
+        {
+            string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
+            string ConncetionString = @"Data Source=" + DBPath + ";";
+            using (SQLiteConnection Database = new SQLiteConnection(ConncetionString))
+            {
+                Database.Open();
+                SQLiteCommand SelectCommand = new SQLiteCommand("SELECT count(*) FROM Articles " +
+                    "INNER JOIN Marques ON Marques.RefMarque = Articles.RefMarque " +
+                    "WHERE Marques.Nom='" + ElementASupprimer+"'", Database);
+                int Count = Convert.ToInt32(SelectCommand.ExecuteScalar());
+                if (Count > 0)
+                {
+                    return "Suppression impossible, la marque est utilisé dans la liste d'article";
+                }
+                else
+                {
+                    SQLiteCommand DeleteCommande = new SQLiteCommand("DELETE FROM Marques WHERE Nom='" + ElementASupprimer + "'", Database);
+                    DeleteCommande.ExecuteNonQuery();
+                }
+            }
+            return "La suppression à bien eu lieu";
+        }
+
+        public static string DelFamilles(string ElementASupprimer)
+        {
+            string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
+            string ConncetionString = @"Data Source=" + DBPath + ";";
+            using (SQLiteConnection Database = new SQLiteConnection(ConncetionString))
+            {
+                Database.Open();
+                SQLiteCommand SelectCommand = new SQLiteCommand("SELECT count(*) FROM SousFamilles " +
+                    "INNER JOIN Familles ON Familles.RefFamille = SousFamilles.RefFamille " +
+                    "WHERE Familles.Nom='" + ElementASupprimer + "'", Database);
+                int Count = Convert.ToInt32(SelectCommand.ExecuteScalar());
+                if (Count > 0)
+                {
+                    return "Suppression impossible, la famille à encore des sous familles de rattaché";
+                }
+                else
+                {
+                    SQLiteCommand DeleteCommande = new SQLiteCommand("DELETE FROM Familles WHERE Nom='" + ElementASupprimer + "'", Database);
+                    DeleteCommande.ExecuteNonQuery();
+                }
+            }
+            return "La suppression à bien eu lieu";
+        }
+
+        public static string DelSousFamilles(string ElementASupprimer)
+        {
+            string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");
+            string ConncetionString = @"Data Source=" + DBPath + ";";
+            using (SQLiteConnection Database = new SQLiteConnection(ConncetionString))
+            {
+                Database.Open();
+                SQLiteCommand SelectCommand = new SQLiteCommand("SELECT count(*) FROM Articles " +
+                    "INNER JOIN SousFamilles ON SousFamilles.RefSousFamille = Artciles.RefSousFamille " +
+                    "WHERE SousFamilles.Nom='" + ElementASupprimer + "'", Database);
+                int Count = Convert.ToInt32(SelectCommand.ExecuteScalar());
+                if (Count > 0)
+                {
+                    return "Suppression impossible, la sous-familles est utilisé dans la liste d'article";
+                }
+                else
+                {
+                    SQLiteCommand DeleteCommande = new SQLiteCommand("DELETE FROM SousFamilles WHERE Nom='" + ElementASupprimer + "'", Database);
+                    DeleteCommande.ExecuteNonQuery();
+                }
+            }
+            return "La suppression à bien eu lieu";
+        }
+        #endregion
+
     }
 }

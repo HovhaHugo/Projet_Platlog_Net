@@ -64,6 +64,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormAjoutArticle.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAjoutArticle.Designer.cs">
+      <DependentUpon>FormAjoutArticle.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormImport.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,6 +86,9 @@
     <Compile Include="ListViewColumnSorter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FormAjoutArticle.resx">
+      <DependentUpon>FormAjoutArticle.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormImport.resx">
       <DependentUpon>FormImport.cs</DependentUpon>
     </EmbeddedResource>

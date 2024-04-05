@@ -30,9 +30,9 @@ namespace Hector
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Tous les articles");
-            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Familles");
-            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Marques");
+            System.Windows.Forms.TreeNode treeNode28 = new System.Windows.Forms.TreeNode("Tous les articles");
+            System.Windows.Forms.TreeNode treeNode29 = new System.Windows.Forms.TreeNode("Familles");
+            System.Windows.Forms.TreeNode treeNode30 = new System.Windows.Forms.TreeNode("Marques");
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fichierToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.actualiserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,8 +78,10 @@ namespace Hector
             // actualiserToolStripMenuItem
             // 
             this.actualiserToolStripMenuItem.Name = "actualiserToolStripMenuItem";
-            this.actualiserToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.actualiserToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            this.actualiserToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.actualiserToolStripMenuItem.Text = "Actualiser";
+            this.actualiserToolStripMenuItem.Click += new System.EventHandler(this.actualiserToolStripMenuItem_Click);
             // 
             // importerToolStripMenuItem
             // 
@@ -131,16 +133,16 @@ namespace Hector
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Margin = new System.Windows.Forms.Padding(2);
             this.treeView1.Name = "treeView1";
-            treeNode10.Name = "NodeArticle";
-            treeNode10.Text = "Tous les articles";
-            treeNode11.Name = "NodeFamille";
-            treeNode11.Text = "Familles";
-            treeNode12.Name = "NodeMarque";
-            treeNode12.Text = "Marques";
+            treeNode28.Name = "NodeArticle";
+            treeNode28.Text = "Tous les articles";
+            treeNode29.Name = "NodeFamille";
+            treeNode29.Text = "Familles";
+            treeNode30.Name = "NodeMarque";
+            treeNode30.Text = "Marques";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode10,
-            treeNode11,
-            treeNode12});
+            treeNode28,
+            treeNode29,
+            treeNode30});
             this.treeView1.Size = new System.Drawing.Size(417, 485);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
@@ -159,7 +161,7 @@ namespace Hector
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
             this.listView1.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView1_ColumnClick);
-            this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            this.listView1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listView1_KeyPress);
             this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
             // 
             // contextMenuStrip1
@@ -168,7 +170,7 @@ namespace Hector
             this.toolStripMenuItem1,
             this.toolStripMenuItem2});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(130, 48);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 70);
             this.contextMenuStrip1.Text = "Gg";
             // 
             // toolStripMenuItem1
@@ -176,12 +178,14 @@ namespace Hector
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.toolStripMenuItem1.Text = "Ajouter";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
             this.toolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
             this.toolStripMenuItem2.Text = "Supprimer";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
             // FormMain
             // 
@@ -195,7 +199,6 @@ namespace Hector
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "FormMain";
             this.Text = "Form1";
-            this.Load += new System.EventHandler(this.FormMain_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
