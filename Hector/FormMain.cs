@@ -201,6 +201,9 @@ namespace Hector
 
         private void exporterToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            FormExport formExport = new FormExport();
+            formExport.StartPosition = FormStartPosition.CenterParent;
+            formExport.ShowDialog(this);
         }
     }
 }
