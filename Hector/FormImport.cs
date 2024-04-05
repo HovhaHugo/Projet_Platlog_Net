@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Data.SQLite;
 using System.IO;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Windows.Forms;
 
 namespace Hector
 {
@@ -19,58 +13,30 @@ namespace Hector
             InitializeComponent();
         }
 
+        //Fonction qui ouvre le openFileDialog lorsque l'on appuie sur le bouton pour chercher un fichier csv
         private void btnOpenFileDialog_Click(object sender, EventArgs e)
         {
             openFileDialog1.ShowDialog();
         }
 
+        //Fonction qui actualise le label du nom du fichier et le path du fichier lorsque l'on en a sélectionné un via le openFileDialog
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             labelFileName.Text = openFileDialog1.SafeFileName;
             txtDirectoryPath.Text = openFileDialog1.FileName;
-            /*using (StreamReader Sr = File.OpenText(openFileDialog1.FileName))
-            {
-                string Ligne = "";
-                textBox1.Text = Ligne;
-                while ((Ligne = Sr.ReadLine()) != null)
-                {
-                    //On rajoute chaque ligne du fichier dans la Textbox
-                    textBox1.Text += Ligne;
-                    textBox1.AppendText(Environment.NewLine);
-                }
-                if (etoile)
-                {
-                    etoile = false;
-                }
-                Text = OGformName + "[" + openFileDialog1.SafeFileName + "]";
-
-                var watcher = new FileSystemWatcher(openFileDialog1.FileName);
-                watcher.NotifyFilter = NotifyFilters.Attributes
-                                     | NotifyFilters.CreationTime
-                                     | NotifyFilters.DirectoryName
-                                     | NotifyFilters.FileName
-                                     | NotifyFilters.LastAccess
-                                     | NotifyFilters.LastWrite
-                                     | NotifyFilters.Security
-                                     | NotifyFilters.Size;
-
-                watcher.Changed += OnChanged;
-                watcher.Filter = "*.txt";
-                watcher.IncludeSubdirectories = true;
-                watcher.EnableRaisingEvents = true;
-            }*/
         }
 
-        //Fonctions qui font avancer les barres de progression à chaque avancée
+        //Fonction qui fait avancer la barre de progression à chaque avancée du programme
         private void UpdateProgress()
         {
-            if (progressBar1.Value < progressBar1.Maximum)
+            if (progressBar.Value < progressBar.Maximum)
             {
-                progressBar1.Value++;
+                progressBar.Value++;
                 Application.DoEvents();
             }
         }
 
+        //Fonction qui compte le nombre totale de lignes dans un fichier csv (pour la barre de progression)
         private int TotalLines(string filePath)
         {
             using (StreamReader r = new StreamReader(filePath))
@@ -81,38 +47,144 @@ namespace Hector
             }
         }
 
-        private void btnEcrase_Click(object sender, EventArgs e)
+        //Fonction pour vérifier l'existence d'une marque à partir de son nom, et la créer si ce n'est pas le cas
+        private void CheckMarque(SQLiteConnection Database, string nomMarque)
         {
-            progressBar1.Maximum = TotalLines(openFileDialog1.FileName);    //on setup le max de la barre de progression pour voir l'avancée par ligne
-            progressBar1.Value = 0;                                         //on met la barre de progression à 0
+            Database.Open();
+            //On vérifie que la marque nommé nomMarque existe, si non on la crée
+            using (SQLiteCommand Command = new SQLiteCommand("SELECT * FROM Marques WHERE Nom = '" + nomMarque + "'", Database))
+            {
+                SQLiteDataReader Query = Command.ExecuteReader();
+                if (!Query.HasRows)
+                {
+                    using (SQLiteCommand CommandArg = new SQLiteCommand("INSERT INTO Marques (Nom) VALUES ('" + nomMarque + "')", Database))
+                        CommandArg.ExecuteNonQuery();
+                }
+            }
+            Database.Close();
+        }
+
+        //Fonction pour vérifier l'existence d'une famille à partir de son nom, et la créer si ce n'est pas le cas
+        private void CheckFamille(SQLiteConnection Database, string nomFamille)
+        {
+            Database.Open();
+            //On vérifie que la famille nommé nomFamille existe, si non on la crée
+            using (SQLiteCommand Command = new SQLiteCommand("SELECT RefFamille, Nom FROM Familles WHERE Nom = '" + nomFamille + "'", Database))
+            {
+                SQLiteDataReader Query = Command.ExecuteReader();
+                if (!Query.HasRows)
+                {
+                    using (SQLiteCommand CommandArg = new SQLiteCommand("INSERT INTO Famille (Nom) VALUES ('" + nomFamille + "')", Database))
+                        CommandArg.ExecuteNonQuery();
+                }
+            }
+            Database.Close();
+        }
+
+        //Fonction pour vérifier l'existence d'une sous-famille à partir de son nom, et la créer si ce n'est pas le cas
+        private void CheckSousFamille(SQLiteConnection Database, string nomFamille, string nomSousFamille)
+        {
+            Database.Open();
+            //On vérifie que la sous-famille nommé nomSousFamille existe, si non on la crée
+            using (SQLiteCommand Command = new SQLiteCommand("SELECT * FROM SousFamilles WHERE Nom = '" + nomSousFamille + "'", Database))
+            {
+                SQLiteDataReader Query = Command.ExecuteReader();
+                if (!Query.HasRows)
+                {
+                    string IDfamille;
+                    //On récupère l'ID de la famille nomFamille à laquelle appartient notre sous-famille
+                    using (SQLiteCommand CommandArg = new SQLiteCommand("SELECT RefFamille FROM Familles WHERE Nom = '" + nomFamille + "'", Database))
+                    {
+                        SQLiteDataReader QueryArg = CommandArg.ExecuteReader();
+                        QueryArg.Read();
+                        IDfamille = QueryArg.GetInt32(0).ToString();
+                    }
+
+                    //On crée la sous-famille
+                    using (SQLiteCommand CommandArg = new SQLiteCommand("INSERT INTO SousFamilles (RefFamille, Nom) VALUES ('" + IDfamille + "', '" + nomSousFamille + "')", Database))
+                        CommandArg.ExecuteNonQuery();
+                }
+            }
+            Database.Close();
+        }
+
+        //Fonction qui va lire le fichier csv obtenu à partir du openFileDialog, puis entrer un à un les articles,
+        //en prenant soin de crée les marques/familles/sous-familles au fur et à mesure qu'on en a besoin, si jamais ils n'existent pas
+        private void AjoutCSV_dans_SQLite()
+        {
+            progressBar.Maximum = TotalLines(openFileDialog1.FileName);    //on setup le max de la barre de progression pour voir l'avancée par ligne
+            progressBar.Value = 0;                                         //on met la barre de progression à 0
             using (var Sr = new StreamReader(openFileDialog1.FileName))
             {
-                UpdateProgress();   //on prend en compte la lecture de la ligne de vérification dans la progression
-                if (Sr.ReadLine() != "Description;Ref;Marque;Famille;Sous-Famille;Prix H.T.") MessageBox.Show("Ce fichier csv n'est pas dans un bon format");
+                //on vérifie si le format du fichier CSV est bon
+                if (Sr.ReadLine() != "Description;Ref;Marque;Famille;Sous-Famille;Prix H.T.") MessageBox.Show("Ce fichier csv n'est pas dans un bon format (en-tête)");
                 else
                 {
+                    UpdateProgress();   //pour la barre de progression, on prend en compte la lecture de la ligne de vérification
                     while (!Sr.EndOfStream)
                     {
                         string line = Sr.ReadLine();
                         string[] values = line.Split(';');
 
-                        //si la ref de l'article values[1] existe déjà on renvoie une erreur (ou on la compte juste pas en la stockant dans une liste d'echec)
-                        //si la marque values[2] existe pas on la crée et on récupère son ID
-                        //sinon on récupère l'ID de la marque existante
-                        //si la famille values[3] existe pas on la crée
-                        //si la sous-famille values[4] existe pas on la crée
-                        //sinon on récupère l'ID de la sous-famille existante
-                        //on ajoute l'article avec sa ref values[1], son nom values[0], sa sous-famille values[4], sa marque values[2], son prix values [5], et sa quantité à 0
+                        string DBPath = Path.Combine(Application.StartupPath, "Hector.SQLite");  //le path vers la base SQLite que l'on remplit
+                        string ConnectionString = @"Data Source=" + DBPath + ";";
 
-                        UpdateProgress();
+                        //On ouvre un SQLiteConnection pour faire des tests, puis ajouter les valeurs du .csv dans le .SQLite
+                        using (SQLiteConnection Database = new SQLiteConnection(ConnectionString))
+                        {
+                            /*
+                            //On crée la marque values[2] si elle n'existe pas
+                            CheckMarque(Database, values[2]);
+
+                            //On crée la famille values[3] si elle n'existe pas
+                            CheckFamille(Database, values[3]);
+
+                            //On crée la sous-famille values[4] si elle n'existe pas
+                            CheckSousFamille(Database, values[3], values[4]);
+                            */
+                            //CREATION DE L'ARTICLE
+
+                            string prix = values[5].Replace(',', '.'); //on remplace la virgule du float du prix par un point pour etre dans le format des requetes SQL
+
+                            //on ajoute l'article avec sa ref values[1], son nom values[0], ID de sa sous-famille values[4], ID de sa marque values[2], son prix values [5], et sa quantité à 0
+                            //on utilise INSERT OR REPLACE pour mettre à jour l'article si son ID existe déjà
+
+                            /*string RequeteAjoutArticle = "INSERT OR REPLACE INTO Articles (RefArticle, Description, RefSousFamille, RefMarque, PrixHT, Quantite)" +
+                                " VALUES ('" + values[1] + "', '" + values[0] + "', " +
+                                "(SELECT RefSousFamille FROM SousFamilles WHERE Nom = '" + values[4] + "'), " +
+                                "(SELECT RefMarque FROM Marques WHERE Nom = '" + values[2] + "'), " + prix + ", 0)";*/
+
+                            string RequeteAjoutArticle = "INSERT OR REPLACE INTO Articles (RefArticle, Description, RefSousFamille, RefMarque, PrixHT, Quantite)" +
+                                " VALUES ('" + values[1] + "', '" + values[0] + "', '1', '1', " + prix + ", 0)";
+
+                            Database.Open();
+                            using (SQLiteCommand Command = new SQLiteCommand(RequeteAjoutArticle, Database))
+                                Command.ExecuteNonQuery();
+                            Database.Close();
+                        }
+                        UpdateProgress(); //on fait avancer la barre de progression
                     }
                 }
             }
         }
 
+        private void btnEcrase_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.CheckFileExists)
+            {
+                //supprimer la base de données actuelle
+                AjoutCSV_dans_SQLite();
+            }
+            else MessageBox.Show("Veuillez choisir un tableau csv via le bouton 'Search file'");
+        }
+
         private void btnAjout_Click(object sender, EventArgs e)
         {
-
+            if (openFileDialog1.CheckFileExists)
+            {
+                AjoutCSV_dans_SQLite();
+            }
+            else MessageBox.Show("Veuillez choisir un tableau csv via le bouton 'Search file'");
         }
     }
 }
